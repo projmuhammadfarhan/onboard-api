@@ -11,7 +11,7 @@ import (
 
 type CustomClaim struct {
 	jwt.StandardClaims
-	Role string `json:"role"`
+	RoleID string `json:"role"`
 	UserID string `json:"user_id"`
 }
 
@@ -23,7 +23,7 @@ func (jwtAuth *jwtUsecase) GenerateToken(userId string, roleId string) (string, 
 
 	claim := CustomClaim{
 		UserID: userId,
-		Role: data.Title,
+		RoleID: data.Title,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),

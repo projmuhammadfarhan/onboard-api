@@ -66,11 +66,10 @@ func (users *userUsecase) CreateUser(newUser user_dto.User) models.Response {
 		Email:          newUser.Email,
 		PersonalNumber: newUser.PersonalNumber,
 		Password:       newUser.Password,
-		Active:         true,
 	}
 
 	userData, _, err := users.userRepo.CreateUser(userInsert)
-
+	// fmt.Println()
 	if err != nil {
 		return helper.ResponseError("Internal server error", err, 500)
 	}
