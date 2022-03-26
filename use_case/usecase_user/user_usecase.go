@@ -5,6 +5,7 @@ import (
 	"main.go/models/dto/login_dto"
 	"main.go/models/dto/user_dto"
 	"main.go/repository/user_repo"
+	"main.go/use_case/jwt_usecase"
 )
 
 type UserUsecase interface {
@@ -17,11 +18,13 @@ type UserUsecase interface {
 }
 
 type userUsecase struct {
-	userRepo user_repo.UserRepository
+	userRepo   user_repo.UserRepository
+	jwtUsecase jwt_usecase.JwtUsecase
 }
 
-func GetUserUsecase(userRepository user_repo.UserRepository) UserUsecase {
+func GetUserUsecase(userRepository user_repo.UserRepository, jwtAuthen jwt_usecase.JwtUsecase) UserUsecase {
 	return &userUsecase{
-		userRepo: userRepository,
+		userRepo:   userRepository,
+		jwtUsecase: jwtAuthen,
 	}
 }

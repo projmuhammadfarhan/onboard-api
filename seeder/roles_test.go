@@ -24,7 +24,7 @@ func TestSeedRoles(t *testing.T) {
 		t.Fatal("failed to connect database")
 	}
 
-	roles := []models.RoleFull{
+	roles := []models.Role{
 		{ID: uuid.New().String(), Title: "admin", Active: true},
 		{ID: uuid.New().String(), Title: "maker", Active: true},
 		{ID: uuid.New().String(), Title: "checker", Active: true},

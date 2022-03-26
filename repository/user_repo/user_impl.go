@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"main.go/helper"
 	"main.go/models"
+	"main.go/models/dto/user_dto"
 	"main.go/models/entity/user"
 )
 
@@ -46,14 +47,14 @@ func (repo *userRepository) GetUsers() ([]user.UserList, error) {
 	return users, nil
 }
 
-func (repo *userRepository) GetUser(id string) (*user.UserDetail, error) {
-	users := user.UserDetail{}
+func (repo *userRepository) GetUser(id string) (*user_dto.UserDetail, error) {
+	users := user_dto.UserDetail{}
 	err := repo.mysqlConnection.Model(&user.User{}).Where("users.id = ?", id).Select("users.name, users.active, users.email, users.personal_number, users.id, roles.title, users.role_id").Joins("left join roles on roles.id = users.role_id").Scan(&users).Error
 	if err != nil {
 		return nil, err
 	}
 
-	if (users == user.UserDetail{}) {
+	if (users == user_dto.UserDetail{}) {
 		return nil, gorm.ErrRecordNotFound
 	}
 
@@ -72,7 +73,7 @@ func (repo *userRepository) CreateUser(user user.User) (*user.User, *models.Role
 	hash, _ := helper.HashPassword(user.Password)
 	user.Password = hash
 
-	if err := repo.mysqlConnection.Where("title = ?", "viewer").Find(&role).Error; err != nil {
+	if err := repo.mysqlConnection.Where("title = ?", "admin").Find(&role).Error; err != nil {
 		return nil, nil, err
 	}
 

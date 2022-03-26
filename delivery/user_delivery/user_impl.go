@@ -69,9 +69,8 @@ func (res *userDelivery) CreateUser(c *gin.Context) {
 func (res *userDelivery) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	request := user_dto.User{}
-	// fmt.Println("Check :", c.ShouldBindJSON(&request))
 	if err := c.ShouldBindJSON(&request); err != nil {
-		errorRes := helper.ResponseError("Bad Request Delivery", err, 400)
+		errorRes := helper.ResponseError("Bad Request", err, 400)
 		c.JSON(errorRes.StatusCode, errorRes)
 		return
 	}
