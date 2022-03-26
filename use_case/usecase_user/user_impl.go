@@ -16,11 +16,11 @@ func (user *userUsecase) GetUsers() models.Response {
 	userlist, err := user.userRepo.GetUsers()
 	response := []user_dto.UserList{}
 	for _, user := range userlist {
-		role := models.Role{ID: user.RoleID, Title: user.Title}
+		role := models.RoleResponse{ID: user.RoleID, Title: user.Title}
 		responseData := user_dto.UserList{
 			ID:     user.ID,
 			Name:   user.Name,
-			Role:   role,
+			RoleID: role,
 			Active: user.Active,
 		}
 		response = append(response, responseData)
@@ -43,35 +43,36 @@ func (user *userUsecase) GetUser(id string) models.Response {
 		return helper.ResponseError("Internal server error", err, 500)
 	}
 
-	role := models.Role{
+	role := models.RoleResponse{
 		ID:    userData.RoleID,
 		Title: userData.Title,
 	}
 
 	userResponse := map[string]interface{}{
-		"id":              userData.ID,
-		"name":            userData.Name,
-		"email":           userData.Email,
-		"role":            role,
-		"personal_number": userData.PersonalNumber,
-		"active":          userData.Active,
+		"id":             userData.ID,
+		"name":           userData.Name,
+		"email":          userData.Email,
+		"role":           role,
+		"personalNumber": userData.PersonalNumber,
+		"active":         userData.Active,
 	}
 	return helper.ResponseSuccess("ok", nil, userResponse, 200)
 }
 
 func (users *userUsecase) CreateUser(newUser user_dto.User) models.Response {
+
 	userInsert := user.User{
 		ID:             newUser.ID,
 		Name:           newUser.Name,
 		Email:          newUser.Email,
 		PersonalNumber: newUser.PersonalNumber,
 		Password:       newUser.Password,
+		Active:         true,
 	}
 
 	userData, _, err := users.userRepo.CreateUser(userInsert)
-	// fmt.Println()
 	if err != nil {
-		return helper.ResponseError("Internal server error", err, 500)
+		return helper.ResponseError("Personal Number is Already Exist", err, 500)
 	}
 
 	return helper.ResponseSuccess("ok", nil, map[string]interface{}{
@@ -125,7 +126,6 @@ func (users *userUsecase) UserLogin(userLogin login_dto.UserLogin) models.Respon
 	}
 
 	jwt := jwt_usecase.GetJwtUsecase(users.userRepo)
-
 	response, _ := jwt.GenerateToken(userData.ID, userData.RoleID)
 
 	return helper.ResponseSuccess("ok", nil, map[string]interface{}{"token": response}, 200)

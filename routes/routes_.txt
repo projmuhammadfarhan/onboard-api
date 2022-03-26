@@ -1,0 +1,111 @@
+package routes
+
+import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"main.go/config"
+	"main.go/delivery/product_delivery"
+	"main.go/delivery/role_delivery"
+	"main.go/delivery/user_delivery"
+	"main.go/middleware"
+	"main.go/repository/product_repo"
+	"main.go/repository/role_repo"
+	"main.go/repository/user_repo"
+	"main.go/use_case/jwt_usecase"
+	"main.go/use_case/usecase_product"
+	"main.go/use_case/usecase_role"
+	"main.go/use_case/usecase_user"
+)
+
+func HandlerRequest() {
+	// auth := jwt_usecase.GetJwtUsecase()
+	config.InitConfig()
+	connection := config.Connect()
+
+	// User
+	userRepository := user_repo.GetUserRepository(connection)
+	jwtUsecase := jwt_usecase.GetJwtUsecase(userRepository)
+	userUsecase := usecase_user.GetUserUsecase(userRepository, jwtUsecase)
+	userDelivery := user_delivery.GetUserDelivery(userUsecase)
+
+	// Role
+	roleRepository := role_repo.GetRoleRepository(connection)
+	roleUsecase := usecase_role.GetRoleUsecase(roleRepository)
+	roleDelivery := role_delivery.GetRoleDelivery(roleUsecase)
+
+	// Product
+	productRepository := product_repo.GetProductRepository(connection)
+	productUsecase := usecase_product.GetProductUsecase(productRepository)
+	productDelivery := product_delivery.GetProductDelivery(productUsecase)
+
+	router := gin.Default()
+	router.Use(cors.Default())
+	
+	adminRoutes := router.Group("/")
+	adminRoutes.Use(middleware.JWTAuthAdmin(jwtUsecase, "admin"))
+	{
+		// Users
+		adminRoutes.POST("/users", userDelivery.CreateUser)
+		adminRoutes.PUT("/users/:id", userDelivery.UpdateUser)
+		adminRoutes.DELETE("/users/:id", userDelivery.DeleteUser)
+		adminRoutes.GET("/users", userDelivery.GetUsers)
+		adminRoutes.GET("/users/:id", userDelivery.GetUser)
+
+		// Product
+		adminRoutes.POST("/products", productDelivery.CreateProduct)
+		adminRoutes.PUT("/products/:id", productDelivery.UpdateProduct)
+		adminRoutes.DELETE("/products/:id", productDelivery.DeleteProduct)
+		adminRoutes.GET("/products", productDelivery.GetProducts)
+		adminRoutes.GET("/products/:id", productDelivery.GetProduct)
+
+		// Role Router
+		adminRoutes.GET("/roles", roleDelivery.GetRoles)
+
+		// Login
+		// adminRoutes.POST("/login", userDelivery.UserLogin)
+
+	}
+
+	// auth := use_case.jwt_usecase.ValidateToken
+
+	// auth := jwt_usecase.JwtUsecase.ValidateToken(a)
+
+	// makerRoutes := router.Group("/maker")
+	adminRoutes.Use(middleware.JWTAuthAdmin(jwtUsecase, "maker"))
+	{
+		adminRoutes.POST("/users", userDelivery.CreateUser)
+	}
+
+	// checkerRoutes := router.Group("/checker")
+	adminRoutes.Use(middleware.JWTAuthAdmin(jwtUsecase, "checker"))
+	{
+		adminRoutes.PUT("/users/:id", userDelivery.UpdateUser)
+	}
+
+	// signerRoutes := router.Group("/")
+	adminRoutes.Use(middleware.JWTAuthAdmin(jwtUsecase, "signer"))
+	{
+		adminRoutes.POST("/users", userDelivery.CreateUser)
+	}
+
+	// viewerRoutes := router.Group("/")
+	adminRoutes.Use(middleware.JWTAuthAdmin(jwtUsecase, "viewer"))
+	// {
+		// Users
+		adminRoutes.GET("/users", userDelivery.GetUsers)
+		adminRoutes.GET("/users/:id", userDelivery.GetUser)
+
+		// Products
+		adminRoutes.GET("/products", productDelivery.GetProducts)
+		adminRoutes.GET("/products/:id", productDelivery.GetProduct)
+	}
+
+	// User Router
+	router.POST("/userss", userDelivery.CreateUser)
+
+	// Login
+	router.POST("/login", userDelivery.UserLogin)
+
+	// RUN ROUTER
+	router.Run(":8001")
+}

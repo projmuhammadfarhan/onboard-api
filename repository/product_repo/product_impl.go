@@ -63,11 +63,9 @@ func (repo *productRepository) GetProduct(id string) (*product.ProductDetail, er
 
 func (repo *productRepository) CreateProduct(product product.Product) (*product.Product, error) {
 	product.ID = uuid.New().String()
-	product.MakerID = "system"
-	product.CheckerID = ""
-	product.SignerID = ""
+	// product.MakerID = "8280ba12-f54c-4667-a87f-739f6256df60"
 
-	if err := repo.mysqlConnection.Create(&product).Error; err != nil {
+	if err := repo.mysqlConnection.Omit("maker_id", "checker_id", "signer_id").Create(&product).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
@@ -128,3 +126,16 @@ func (repo *productRepository) DeleteProduct(id string) error {
 
 	return nil
 }
+
+// GET PRODUCT
+// products := product_dto.ProductDetail{}
+// err := repo.mysqlConnection.Model(&product.Product{}).Where("products.id = ?", id).Select("products.name, products.description, products.status, products.id, users.name, products.maker_id").Joins("left join users on users.id = products.maker_id AND users.id = products.signer_id AND users.id = products.checker_id").Scan(&products).Error
+// if err != nil {
+// 	return nil, err
+// }
+
+// if (products == product_dto.ProductDetail{}) {
+// 	return nil, gorm.ErrRecordNotFound
+// }
+
+// return &products, nil

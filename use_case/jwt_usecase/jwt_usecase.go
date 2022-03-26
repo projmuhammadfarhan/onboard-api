@@ -9,6 +9,7 @@ type JwtUsecase interface {
 	GenerateToken(string, string) (string, error)
 	ValidateToken(string) (*jwt.Token, error)
 	ValidateTokenAndGetUserId(string) (string, error)
+	ValidateTokenAndGetRole(string) (string, string, error)
 }
 
 type jwtUsecase struct {

@@ -2,14 +2,11 @@ package role_repo
 
 import (
 	"gorm.io/gorm"
+	"main.go/models"
 )
 
 type RoleRepository interface {
-	// GetRoles() (models.RoleFull, error)
-	// GetRole(string) (*product.ProductDetail, error)
-	// CreateProduct(product.Product) (*product.Product, error)
-	// UpdateProduct(product.Product, string, string) (*product.Product, error)
-	// DeleteProduct(string) error
+	GetRoles() ([]models.Role, error)
 }
 
 type roleRepository struct {

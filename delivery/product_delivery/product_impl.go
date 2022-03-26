@@ -9,34 +9,6 @@ import (
 	"main.go/models/dto/product_dto"
 )
 
-func (product_delivery *productDelivery) GetProducts(c *gin.Context) {
-	response := product_delivery.productUsecase.GetProducts()
-	// Cek output response
-	fmt.Printf("%v", response)
-	if response.Status != "ok" {
-		c.JSON(response.StatusCode, response)
-		return
-	}
-	c.JSON(response.StatusCode, response)
-}
-
-// func (product *productDelivery) GetProducts(c *gin.Context) {
-
-func (product_delivery *productDelivery) GetProduct(c *gin.Context) {
-	id := c.Param("id")
-	response := product_delivery.productUsecase.GetProduct(id)
-
-	if response.StatusCode == http.StatusNotFound {
-		c.JSON(http.StatusOK, response)
-		return
-	}
-	if response.Status != "ok" {
-		c.JSON(response.StatusCode, response)
-		return
-	}
-	c.JSON(http.StatusOK, response)
-}
-
 func (product_delivery *productDelivery) CreateProduct(c *gin.Context) {
 	request := product_dto.Product{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -54,6 +26,32 @@ func (product_delivery *productDelivery) CreateProduct(c *gin.Context) {
 	}
 
 	c.JSON(response.StatusCode, response)
+}
+
+func (product_delivery *productDelivery) GetProducts(c *gin.Context) {
+	response := product_delivery.productUsecase.GetProducts()
+	// Cek output response
+	fmt.Printf("%v", response)
+	if response.Status != "ok" {
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	c.JSON(response.StatusCode, response)
+}
+
+func (product_delivery *productDelivery) GetProduct(c *gin.Context) {
+	id := c.Param("id")
+	response := product_delivery.productUsecase.GetProduct(id)
+
+	if response.StatusCode == http.StatusNotFound {
+		c.JSON(http.StatusOK, response)
+		return
+	}
+	if response.Status != "ok" {
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func (product_delivery *productDelivery) UpdateProduct(c *gin.Context) {
