@@ -73,7 +73,7 @@ func (repo *userRepository) CreateUser(user user.User) (*user.User, *models.Role
 	hash, _ := helper.HashPassword(user.Password)
 	user.Password = hash
 
-	if err := repo.mysqlConnection.Where("title = ?", "admin").Find(&role).Error; err != nil {
+	if err := repo.mysqlConnection.Where("title = ?", "viewer").Find(&role).Error; err != nil {
 		return nil, nil, err
 	}
 

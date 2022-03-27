@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"main.go/helper"
 	"main.go/use_case/jwt_usecase"
@@ -36,8 +34,8 @@ func JWTAuthAdmin(jwtUsecase jwt_usecase.JwtUsecase, roleTitle []string) gin.Han
 		}
 		indikator := 0
 		for _, v := range roleTitle {
-			fmt.Println("CHECK V : ", v)
-			fmt.Println("CHECK ROLE : ", role)
+			// fmt.Println("CHECK V : ", v)
+			// fmt.Println("CHECK ROLE : ", role)
 			if v == role {
 				// resp := helper.ResponseError("Wrong Access", "You can't Access this Action", 401)
 				// c.AbortWithStatusJSON(resp.StatusCode, resp)
