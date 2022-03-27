@@ -15,17 +15,23 @@ type CustomClaim struct {
 	jwt.StandardClaims
 	UserID string `json:"user_id"`
 	Role   string `json:"role"`
+	Name   string `json:"name"`
 }
 
-func (jwtAuth *jwtUsecase) GenerateToken(userId string, role string) (string, error) {
-	data, err := jwtAuth.userRepo.GetRoleByRoleId(role)
+func (jwtAuth *jwtUsecase) GenerateToken(userId string, name string, role string) (string, error) {
+	dataRole, err := jwtAuth.userRepo.GetRoleByRoleId(role)
 	if err != nil {
 		return "user not found", err
 	}
+	// dataUser, err := jwtAuth.userRepo.GetUserByPN()(role)
+	// if err != nil {
+	// 	return "user not found", err
+	// }
 
 	claim := CustomClaim{
 		UserID: userId,
-		Role:   data.Title,
+		Role:   dataRole.Title,
+		Name:   name,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
