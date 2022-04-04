@@ -38,7 +38,14 @@ func HandlerRequest() {
 	productDelivery := product_delivery.GetProductDelivery(productUsecase)
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+	}))
+	// router.Use(cors.Default())
 
 	// Users
 	router.POST("/users", middleware.JWTAuthAdmin(jwtUsecase, []string{"admin", "maker"}), userDelivery.CreateUser)
